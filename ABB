@@ -1,0 +1,407 @@
+//NODO ABB
+public class NodoABB{
+
+    //Atributos
+    private Comparable elem;
+    private NodoABB izquierdo;
+    private NodoABB derecho;
+
+    //Constructor
+    public NodoABB(Comparable elem, NodoABB izq,NodoABB der){
+        this.elem = elem;
+        this.izquierdo = izq;
+        this.derecho = der;
+    }
+
+    //Getters & Setters
+    public Comparable getElem(){
+        return this.elem;
+    }
+    public void setElem(Comparable elem) {
+        this.elem = elem;
+    }
+
+    public NodoABB getIzquierdo() {
+        return this.izquierdo;
+    }
+
+    public void setIzquierdo(NodoABB izquierdo) {
+        this.izquierdo = izquierdo;
+    }
+
+    public NodoABB getDerecho() {
+        return this.derecho;
+    }
+
+    public void setDerecho(NodoABB derecho) {
+        this.derecho = derecho;
+    }
+}
+
+//ABB
+public class ArbolBB {
+    //Atributos
+    private NodoABB raiz;
+
+    //Constructor
+    public ArbolBB(){
+        this.raiz = null;
+    }
+    public boolean pertenece(Comparable elemento){
+        //Este metodo verifica si el elemento recibido pertenece al arbol
+
+        //Declaracion de variables
+        boolean encontrado = false;
+
+        //Asignacion de variables y ejecucion
+        if (this.raiz != null){
+            encontrado = perteneceAux(this.raiz, elemento);
+        }
+        return encontrado;
+    }
+    public boolean perteneceAux(NodoABB nodo, Comparable elemento){
+        //Este metodo verifica si el elemento recibido pertenece al arbol
+
+        //Declaracion de variables
+        Comparable comparar = nodo.getElem();
+        boolean encontrado=false;
+
+        //Asignacion de variables y ejecucion
+        if(nodo != null){
+            if(comparar.compareTo(elemento) == 0){   //Si son iguales retorna true
+                encontrado = true;
+            }else if(comparar.compareTo(elemento)<0){ //Si el elemento a buscar es menor al del nodo, entro con el hijo izquierdo.
+                encontrado = perteneceAux(nodo.getIzquierdo(), elemento);
+            }else{                                   //Entonces es mas grande, entra con el hijo derecho
+                encontrado = perteneceAux(nodo.getDerecho(), elemento);
+            }
+        }
+        return encontrado;
+    }
+    public boolean insertar(Comparable elemento){
+        //Este metodo inserta el elemento recibido si no se encuentra repetido
+
+        //Declaracion de variables
+        boolean exito=true;
+
+        //Asignacion de variables y ejeucion
+        if(this.raiz==null){
+            this.raiz = new NodoABB(elemento,null,null);
+        }else{
+            exito=insertarAux(this.raiz,elemento);
+        }
+        return exito;
+    }
+    private boolean insertarAux(NodoABB n, Comparable elemento){
+        //precondicion: n no es nulo
+        Comparable comparar = n.getElem();
+        boolean exito=true;
+        if((elemento.compareTo(comparar)==0)){
+            exito=false;
+        }else if(elemento.compareTo(comparar)<0){
+            if(n.getIzquierdo()!=null){
+                exito=insertarAux(n.getIzquierdo(),elemento);
+            }else{
+                n.setIzquierdo(new NodoABB(elemento,null,null));
+            }
+        }else{
+            if(n.getDerecho()!=null){
+                exito=insertarAux(n.getDerecho(),elemento);
+            }else{
+                n.setDerecho(new NodoABB(elemento,null,null));
+            }
+        }
+        return exito;
+    }
+    public boolean eliminar(Comparable elemento) {
+        boolean exito = false;
+        if ((this.raiz != null)) {
+            exito = eliminarAux(this.raiz, null, elemento);
+        }
+        return exito;
+    }
+    private boolean eliminarAux(NodoABB nodo, NodoABB padre, Comparable elem) {
+        boolean exito = false;
+        if (nodo != null) {
+            if (nodo.getElem().compareTo(elem) > 0) {
+
+                exito = eliminarAux(nodo.getIzquierdo(), nodo, elem);
+
+            } else if (nodo.getElem().compareTo(elem) < 0) {
+
+                exito = eliminarAux(nodo.getDerecho(), nodo, elem);
+
+            } else {
+                //encontre el elemento a eliminar
+                if (nodo.getDerecho() == null && nodo.getIzquierdo() == null) {
+                    eliminarCaso1(padre, elem);
+
+                } else if ((nodo.getDerecho() != null && nodo.getIzquierdo() != null)) {
+                    //tiene 2 solo hijo
+                    eliminarCaso3(nodo);
+
+                } else {
+                    eliminarCaso2(nodo, padre, elem);
+
+                }
+                exito = true;
+            }
+
+        }
+
+        return exito;
+    }
+    private void eliminarCaso1(NodoABB nodo, Comparable elem) {
+        System.out.println("Eliminando en caso 1");
+        //eliminar una hoja
+        if (nodo.getDerecho() != null) {
+            if (nodo.getDerecho().getElem().compareTo(elem) == 0) {
+                nodo.setDerecho(null);
+            }
+        } else if (nodo.getIzquierdo() != null) {
+            if (nodo.getIzquierdo().getElem().compareTo(elem) == 0) {
+                nodo.setIzquierdo(null);
+
+            }
+        }
+    }
+    private void eliminarCaso2(NodoABB nodo, NodoABB padre, Comparable elem) {
+        //eliminar nodo con 1 solo hijo
+        System.out.println("Eliminando en caso 2");
+        if (padre.getElem().compareTo(nodo.getElem()) > 0) {
+            //hijo izquierdo
+            if (nodo.getDerecho() != null) {
+                padre.setIzquierdo(nodo.getDerecho());
+            } else {
+                padre.setIzquierdo(nodo.getIzquierdo());
+            }
+        } else {
+            //hijo derecho
+            if (nodo.getDerecho() != null) {
+                padre.setDerecho(nodo.getDerecho());
+            } else {
+                padre.setDerecho(nodo.getIzquierdo());
+            }
+        }
+    }
+    private void eliminarCaso3(NodoABB nodo) {
+        //eliminar nodo con 2 hijos
+        System.out.println("Eliminando en caso 3");
+        NodoABB candidato = nodo.getIzquierdo();
+        NodoABB padreCandidato = nodo;
+        // obtengo el mayor del subarbol izquierdo
+        while (candidato.getDerecho() != null) {
+            padreCandidato = candidato;
+            candidato = candidato.getDerecho();
+        }
+        nodo.setElem(candidato.getElem()); //reemplazo el valor
+        //ahora tengo que eliminar el candidato
+        if((candidato.getDerecho()==null)&&(candidato.getIzquierdo()==null)){ //si el candidato es hoja
+            eliminarCaso1(candidato,candidato.getElem());
+        }else{
+            //Si no es hoja tiene 1 solo hijo
+            eliminarCaso2(candidato,padreCandidato,candidato.getElem());
+        }
+    }
+    public Lista listarRango(Comparable min, Comparable max) {
+        Lista ls = new Lista();
+        if (!this.esVacio()) {
+            listarRangoAux(this.raiz,min,max, ls);
+        }
+        return ls;
+    }
+    private void listarRangoAux(NodoABB nodo,Comparable minimo, Comparable maximo, Lista lista) {
+        if (nodo != null) {
+            Comparable elemento = nodo.getElem();
+            if (elemento.compareTo(maximo) < 0) {
+                listarRangoAux(nodo.getDerecho(), minimo, maximo, lista);
+            }
+            if (elemento.compareTo(minimo) >= 0 && elemento.compareTo(maximo) <= 0) {
+                lista.insertar(elemento, 1);
+            }
+            if (elemento.compareTo(minimo) > 0) {
+                listarRangoAux(nodo.getIzquierdo(), minimo, maximo, lista);
+            }
+        }
+
+    }
+    public Lista listar(){
+        Lista ls = new Lista();
+        if(!this.esVacio()){
+            listarAux(this.raiz,ls);
+        }
+        return ls;
+    }
+    private void  listarAux(NodoABB nodo, Lista lis){
+        if(nodo!=null){
+            NodoABB izq = nodo.getIzquierdo();
+            NodoABB der = nodo.getDerecho();
+            listarAux(izq,lis);
+
+            lis.insertar(nodo.getElem(),lis.longitud()+1);
+
+            listarAux(der,lis);
+
+        }
+    }
+    public Comparable minimoElem(){
+        Comparable minimo;
+        return minimo=minimoAux(this.raiz);
+    }
+    private Comparable minimoAux(NodoABB nodo){
+        Comparable minimo=null;
+        if(nodo!=null){
+            if(nodo.getIzquierdo()==null){
+                //Si no tiene HI
+                minimo=nodo.getElem();
+            }else{
+                minimo=minimoAux(nodo.getIzquierdo());
+            }
+        }
+        return minimo;
+    }
+    public Comparable maximoElem(){
+        Comparable maximo;
+        return maximo=maximoAux(this.raiz);
+    }
+    private Comparable maximoAux(NodoABB nodo){
+        Comparable maximo=null;
+        if(nodo!=null){
+            if(nodo.getDerecho()==null){
+                //Si no tiene HD
+                maximo=nodo.getElem();
+            }else{
+                maximo=maximoAux(nodo.getDerecho());
+            }
+        }
+        return maximo;
+    }
+    public boolean esVacio(){
+        return raiz==null;
+    }
+    public String toString(){
+        //preorden
+        String cadena="";
+        if(this.raiz!=null){
+            cadena=toStringAux(this.raiz);
+        }
+        return cadena;
+    }
+    private String toStringAux(NodoABB nodo){
+        String laCadena="";
+        if(nodo!=null){
+            laCadena+=" Nodo: "+nodo.getElem();
+            if(nodo.getIzquierdo()!=null){
+                laCadena+=" HI: "+nodo.getIzquierdo().getElem();
+            }else{
+                laCadena+=" HI: -";
+            }
+            laCadena+=" HD: ";
+            if(nodo.getDerecho()!=null){
+                laCadena+=nodo.getDerecho().getElem();
+            }else{
+                laCadena+="-";
+            }
+            laCadena+="\n"+toStringAux(nodo.getIzquierdo())+toStringAux(nodo.getDerecho());
+        }
+        return laCadena;
+    }
+    public void vaciar(){
+        this.raiz=null;
+    }
+    @Override
+    public ArbolBB clone() {
+        ArbolBB nuevo = new ArbolBB();
+        nuevo.raiz = clonarAux(this.raiz);
+        return nuevo;
+    }
+
+    private NodoABB clonarAux(NodoABB aux) {
+        NodoABB hijo = null;
+        if (aux != null) {
+            hijo = new NodoABB(aux.getElem(), clonarAux(aux.getDerecho()), clonarAux(aux.getIzquierdo()));
+        }
+        return hijo;
+    }
+
+    public void eliminarMinimo(){
+        eliminarMinimoAux(this.raiz,null);
+    }
+    private void eliminarMinimoAux(NodoABB nodo, NodoABB padre){
+        if(nodo!=null){
+            if(nodo.getIzquierdo()!=null){
+                //Si tengo mas hijos, no soy el minimo
+                eliminarMinimoAux(nodo.getIzquierdo(),nodo);
+            }else{
+                //estoy en el nodo minimo
+                if(nodo.getDerecho()!=null){
+                    //Es el nodo minimo pero tengo una rama por la derecha
+                    padre.setIzquierdo(nodo.getDerecho());
+                }else{
+                    //Es el nodo minimo y no tiene ramas por la derecha
+                    padre.setIzquierdo(null);
+                }
+            }
+        }
+    }
+    public ArbolBB clonarParteInvertida() {
+        ArbolBB nuevo = new ArbolBB();
+        nuevo.raiz = clonarParteInvertidaAux(this.raiz);
+        return nuevo;
+    }
+
+    private NodoABB clonarParteInvertidaAux(NodoABB aux) {
+        NodoABB hijo = null;
+        if (aux != null) {
+            hijo = new NodoABB(aux.getElem(), clonarParteInvertidaAux(aux.getIzquierdo()),clonarParteInvertidaAux(aux.getDerecho()));
+        }
+        return hijo;
+    }
+    public Lista listarMayorIgual(Comparable elem){
+        Lista ls=new Lista();
+
+        if(this.raiz != null){
+            listarMayorIgualAux(this.raiz, ls, elem, false);
+        }
+        return ls;
+    }
+    private boolean listarMayorIgualAux(NodoABB nodo, Lista ls, Comparable elem, boolean encontrado){
+        if(nodo != null){
+            Comparable comparar = nodo.getElem();
+            if((elem.compareTo(comparar) < 0 && nodo.getIzquierdo() != null) || (nodo.getIzquierdo() != null && encontrado)){
+               encontrado = listarMayorIgualAux(nodo.getIzquierdo(),ls, elem, encontrado);
+            }
+            if(elem.compareTo(comparar) == 0){
+                encontrado = true;
+            }
+            if(encontrado){
+                ls.insertar(comparar,ls.longitud()+1);
+            }
+            if(nodo.getDerecho() != null){
+               encontrado = listarMayorIgualAux(nodo.getDerecho(),ls, elem, encontrado);
+            }
+        }
+        return encontrado;
+    }
+    public Lista listarMenores(Comparable elem){
+        Lista ls = new Lista();
+        if(this.raiz != null){
+            listarMenoresAux(this.raiz, elem, ls);
+        }
+        return ls;
+    }
+    private void listarMenoresAux(NodoABB nodo, Comparable elem, Lista ls){
+        if(nodo != null){
+            Comparable comparar = nodo.getElem();
+            if(nodo.getIzquierdo() != null){
+                listarMenoresAux(nodo.getIzquierdo(), elem, ls);
+        }
+            if(comparar.compareTo(elem)<0){
+                ls.insertar(comparar, ls.longitud()+1);
+            }
+            if(nodo.getDerecho() != null && comparar.compareTo(elem)<0){
+                listarMenoresAux(nodo.getDerecho(), elem, ls);
+            }
+    }
+    }
+}
