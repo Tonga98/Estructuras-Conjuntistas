@@ -1,2 +1,2 @@
 # Estructuras-Conjuntistas
-Estructuras conjuntistas ABB que realize
+Estructura conjuntista ABB que realize
